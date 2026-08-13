@@ -95,3 +95,26 @@
 		<MusicPlayer />
 	</FlameWrap>
 </GlassObject>
+
+<!-- Plain footer links. pointer-events-auto so GlassObject's pointer routing
+     lets them click while everything around them still drags to orbit. -->
+<div
+	class="pointer-events-none fixed inset-x-0 bottom-6 z-10 flex justify-center gap-8 font-sans text-sm text-white/40"
+>
+	<a
+		class="pointer-events-auto hover:underline"
+		href="https://youtu.be/37wy90RnATM"
+		target="_blank"
+		rel="noopener noreferrer"
+	>
+		Video
+	</a>
+	<a
+		class="pointer-events-auto hover:underline"
+		href="https://github.com/githyperplexed/canvas-ui-experiment"
+		target="_blank"
+		rel="noopener noreferrer"
+	>
+		Repo
+	</a>
+</div>

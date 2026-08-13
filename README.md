@@ -10,6 +10,9 @@ per-song accent color that sweeps purple → amber → blue as the playlist
 advances. See [EFFECTS.md](EFFECTS.md) for the full composition breakdown and
 the engineering log.
 
+**[Live demo](https://canvas-ui.hyperplexed.io)** ·
+**[Video](https://youtu.be/37wy90RnATM)**
+
 ## Stack
 
 - [SvelteKit](https://svelte.dev/docs/kit) (Svelte 5, runes mode)

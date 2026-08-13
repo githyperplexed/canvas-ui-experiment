@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@theme {
+	--font-sans: "Lexend", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+	@apply overflow-hidden bg-black font-sans text-white antialiased;
+}

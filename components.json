@@ -1,0 +1,23 @@
+{
+	"$schema": "https://ui.shadcn.com/schema.json",
+	"style": "default",
+	"rsc": false,
+	"tsx": true,
+	"tailwind": {
+		"config": "",
+		"css": "src/routes/layout.css",
+		"baseColor": "neutral",
+		"cssVariables": true
+	},
+	"iconLibrary": "lucide",
+	"aliases": {
+		"components": "$lib/components",
+		"utils": "$lib/utilities/cn",
+		"ui": "$lib/components/ui",
+		"lib": "$lib",
+		"hooks": "$lib/hooks"
+	},
+	"registries": {
+		"@canvas-ui": "https://canvasui.dev/r/{name}.json"
+	}
+}

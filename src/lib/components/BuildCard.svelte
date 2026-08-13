@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { cn } from "$lib/utilities/cn";
+
 	import playIcon from "$lib/assets/icons/play.svg?raw";
 	import skipBackIcon from "$lib/assets/icons/skip-back.svg?raw";
 	import skipForwardIcon from "$lib/assets/icons/skip-forward.svg?raw";
-	import { cn } from "$lib/utils";
 
 	// The static, effect-free music card with every item individually
 	// revealable. The card shell itself grows first — tiny square, then full

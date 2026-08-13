@@ -12,8 +12,10 @@
 	import MusicPlayer from "$lib/components/MusicPlayer.svelte";
 	import Receipt from "$lib/components/Receipt.svelte";
 	import SequencePlayer from "$lib/components/SequencePlayer.svelte";
-	import { player, rgbCss } from "$lib/player.svelte";
-	import { cn } from "$lib/utils";
+	import { player } from "$lib/player.svelte";
+
+	import { cn } from "$lib/utilities/cn";
+	import { rgbCss } from "$lib/utilities/color";
 
 	const cardShape = `data:image/svg+xml;utf8,${encodeURIComponent(
 		'<svg xmlns="http://www.w3.org/2000/svg" width="720" height="960"><rect width="720" height="960" rx="32" fill="black"/></svg>'
@@ -57,7 +59,7 @@
 	// without stealing interaction; window pointer moves are mirrored onto it.
 	// Hover only: any held button is an orbit drag, so the liquid is told to
 	// forget the pointer instead — no trails while rotating, no jump on release.
-	function forwardToLiquid(event: PointerEvent) {
+	const forwardToLiquid = (event: PointerEvent) => {
 		const root = liquidLayer?.firstElementChild;
 		if (!root) return;
 		if (event.buttons !== 0) {
@@ -71,7 +73,7 @@
 				clientY: event.clientY
 			})
 		);
-	}
+	};
 </script>
 
 <svelte:window onpointermove={forwardToLiquid} />

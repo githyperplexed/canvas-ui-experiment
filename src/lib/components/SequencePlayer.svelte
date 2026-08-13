@@ -1,6 +1,6 @@
 <script lang="ts">
 	import BuildCard from "$lib/components/BuildCard.svelte";
-	import { cn } from "$lib/utils";
+	import { cn } from "$lib/utilities/cn";
 
 	// Scenes group BuildCard's 16 reveal indices for the nav; `end` is the
 	// last reveal in the scene. Playback is a single even rhythm: every

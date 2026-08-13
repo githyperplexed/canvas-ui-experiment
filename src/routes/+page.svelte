@@ -117,4 +117,12 @@
 	>
 		Repo
 	</a>
+	<a
+		class="pointer-events-auto hover:underline"
+		href="https://canvasui.dev"
+		target="_blank"
+		rel="noopener noreferrer"
+	>
+		Canvas UI
+	</a>
 </div>

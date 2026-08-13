@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
+
 	import BoardingPass from "$lib/components/BoardingPass.svelte";
 	import Blaze from "$lib/components/canvasui/Blaze.svelte";
 	import FlameWrap from "$lib/components/canvasui/FlameWrap.svelte";
@@ -7,11 +8,14 @@
 	import HexFloat from "$lib/components/canvasui/HexFloat.svelte";
 	import Liquid from "$lib/components/canvasui/Liquid.svelte";
 	import Magnify from "$lib/components/canvasui/Magnify.svelte";
+	import CaptchaCard from "$lib/components/CaptchaCard.svelte";
 	import CheckoutForm from "$lib/components/CheckoutForm.svelte";
+	import CookieBanner from "$lib/components/CookieBanner.svelte";
 	import EffectsBuild from "$lib/components/EffectsBuild.svelte";
 	import MusicPlayer from "$lib/components/MusicPlayer.svelte";
 	import Receipt from "$lib/components/Receipt.svelte";
 	import SequencePlayer from "$lib/components/SequencePlayer.svelte";
+
 	import { player } from "$lib/player.svelte";
 
 	import { cn } from "$lib/utilities/cn";
@@ -26,12 +30,18 @@
 	// mid-transition. See EFFECTS.md. Variants:
 	//   ?thumbnail / ?thumbnail=form  landscape payment card (default)
 	//   ?thumbnail=input              three raw XXL inputs, no container
+	//   ?thumbnail=search             one pill XXL search input, split
+	//   ?thumbnail=captcha            the "I'm not a robot" card, split
+	//   ?thumbnail=cookies            the cookie consent banner, split
 	//   ?thumbnail=full-form          the whole flaming card, no split
 	//   ?thumbnail=receipt            the day-one receipt on HexFloat, no split
 	//   ?thumbnail=pass               a boarding pass under Magnify, no split
 	const thumbnailVariant = $derived(page.url.searchParams.get("thumbnail"));
 	const thumbnail = $derived(thumbnailVariant !== null);
 	const thumbnailInput = $derived(thumbnailVariant === "input");
+	const thumbnailSearch = $derived(thumbnailVariant === "search");
+	const thumbnailCaptcha = $derived(thumbnailVariant === "captcha");
+	const thumbnailCookies = $derived(thumbnailVariant === "cookies");
 	const thumbnailFullForm = $derived(thumbnailVariant === "full-form");
 	const thumbnailReceipt = $derived(thumbnailVariant === "receipt");
 	const thumbnailPass = $derived(thumbnailVariant === "pass");
@@ -173,6 +183,127 @@
 							<input class={cn(xxlInputClass, "h-full w-full")} type="text" {placeholder} />
 						</FlameWrap>
 					{/each}
+				</div>
+			</div>
+		{:else if thumbnailCaptcha}
+			<!-- The robot-check card mid-incineration: checkbox half plain, the
+			     verification mark half burning. -->
+			<div class="absolute inset-y-0 left-0 w-1/2 overflow-clip">
+				<div class="absolute top-1/2 right-0 h-[400px] w-[1600px] translate-x-1/2 -translate-y-1/2">
+					<CaptchaCard />
+				</div>
+			</div>
+			<div class="absolute inset-y-0 right-0 w-1/2 overflow-clip">
+				<!-- Blaze behind the burning half only, orange to match. -->
+				<div class="absolute inset-0">
+					<Blaze
+						class="h-full w-full"
+						layers={3}
+						distortion={0}
+						sparkColor={[0.976, 0.451, 0.086]}
+						smokeColor={[0.586, 0.271, 0.052]}
+					/>
+				</div>
+				<div class="absolute top-1/2 left-0 h-[400px] w-[1600px] -translate-x-1/2 -translate-y-1/2">
+					<FlameWrap
+						class="h-full w-full"
+						color={[0.976, 0.451, 0.086]}
+						radius={16}
+						height={420}
+						spread={28}
+						scale={0.65}
+						intensity={1}
+						sparks={2.5}
+						sparkDensity={2}
+					>
+						<CaptchaCard />
+					</FlameWrap>
+				</div>
+			</div>
+		{:else if thumbnailCookies}
+			<!-- The cookie consent banner: copy on the plain left half, the
+			     "Accept all" button row burning on the right. Light card on
+			     the dark stage, like the captcha. -->
+			<div class="absolute inset-y-0 left-0 w-1/2 overflow-clip">
+				<div class="absolute top-1/2 right-0 h-[480px] w-[1600px] translate-x-1/2 -translate-y-1/2">
+					<CookieBanner />
+				</div>
+			</div>
+			<div class="absolute inset-y-0 right-0 w-1/2 overflow-clip">
+				<!-- Blaze behind the burning half only — sparks and smoke rising
+				     in the same orange as the flames. -->
+				<div class="absolute inset-0">
+					<Blaze
+						class="h-full w-full"
+						layers={3}
+						distortion={0}
+						sparkColor={[0.976, 0.451, 0.086]}
+						smokeColor={[0.586, 0.271, 0.052]}
+					/>
+				</div>
+				<div class="absolute top-1/2 left-0 h-[480px] w-[1600px] -translate-x-1/2 -translate-y-1/2">
+					<FlameWrap
+						class="h-full w-full"
+						color={[0.976, 0.451, 0.086]}
+						radius={48}
+						height={360}
+						spread={24}
+						scale={0.65}
+						intensity={0.9}
+						sparks={2}
+						sparkDensity={1.5}
+					>
+						<CookieBanner />
+					</FlameWrap>
+				</div>
+			</div>
+		{:else if thumbnailSearch}
+			<!-- One pill XXL search input split across the divider — same
+			     pinned-to-center px formula as the other splits, plain left
+			     half, burning right half. FlameWrap's radius matches the pill
+			     (half the input height) so the flames trace the rounded
+			     silhouette. -->
+			{#snippet searchInput()}
+				<div class="relative h-full w-full">
+					<svg
+						class="absolute top-1/2 left-20 size-20 -translate-y-1/2 text-white/35"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						aria-hidden="true"
+					>
+						<circle cx="11" cy="11" r="7" />
+						<path d="m21 21-4.3-4.3" />
+					</svg>
+					<input
+						class="h-full w-full rounded-full border-3 border-white/15 bg-white/5 pr-20 pl-48 font-sans text-7xl text-white outline-none placeholder:text-white/30 focus:border-blue-400/55"
+						type="text"
+						placeholder="Search anything..."
+					/>
+				</div>
+			{/snippet}
+			<div class="absolute inset-y-0 left-0 w-1/2 overflow-clip">
+				<div class="absolute top-1/2 right-0 h-[220px] w-[1600px] translate-x-1/2 -translate-y-1/2">
+					{@render searchInput()}
+				</div>
+			</div>
+			<div class="absolute inset-y-0 right-0 w-1/2 overflow-clip">
+				<div class="absolute top-1/2 left-0 h-[220px] w-[1600px] -translate-x-1/2 -translate-y-1/2">
+					<FlameWrap
+						class="h-full w-full"
+						color={[0.231, 0.51, 0.965]}
+						radius={110}
+						height={360}
+						spread={24}
+						scale={0.65}
+						intensity={0.9}
+						sparks={2}
+						sparkDensity={1.5}
+					>
+						{@render searchInput()}
+					</FlameWrap>
 				</div>
 			</div>
 		{:else}

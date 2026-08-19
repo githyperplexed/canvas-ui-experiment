@@ -5,6 +5,8 @@
 
 	import { player } from "$lib/player.svelte";
 
+	import { effectsOn } from "$lib/effects.svelte";
+
 	const accent = $derived(player.accent.current);
 </script>
 
@@ -13,7 +15,7 @@
      playback starts. -->
 <div class="relative mt-16">
 	<div class="mx-auto h-1 w-64 bg-linear-to-r from-transparent via-white/15 to-transparent"></div>
-	{#if player.playing}
+	{#if player.playing && effectsOn.laser}
 		<div
 			class="pointer-events-none absolute inset-x-0 -top-80 -bottom-80"
 			transition:fade={{ duration: 700 }}

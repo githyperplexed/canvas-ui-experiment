@@ -4,11 +4,14 @@
 	import GlassObject from "$lib/components/canvasui/GlassObject.svelte";
 	import HexFloat from "$lib/components/canvasui/HexFloat.svelte";
 	import Liquid from "$lib/components/canvasui/Liquid.svelte";
+	import EffectsPanel from "$lib/components/EffectsPanel.svelte";
 	import MusicPlayer from "$lib/components/MusicPlayer.svelte";
 
 	import { player } from "$lib/player.svelte";
 
 	import { rgbCss } from "$lib/utilities/color";
+
+	import { effectsOn } from "$lib/effects.svelte";
 
 	// The glass slab's entire 3D model: one rounded rectangle, card-shaped.
 	const cardShape = `data:image/svg+xml;utf8,${encodeURIComponent(
@@ -47,54 +50,82 @@
      layer is oversized past the viewport so the tilt never reveals the
      plane's edges. -->
 <div class="fixed -inset-x-1/4 -top-1/4 bottom-0 -z-10">
-	<HexFloat
-		class="h-full w-full"
-		size={320}
-		float={0.25}
-		speed={0.4}
-		shine={0.25}
-		bloom={0.1}
-		iridescence={0}
-		grain={0}
-	>
+	{#if effectsOn.hexFloat}
+		<HexFloat
+			class="h-full w-full"
+			size={320}
+			float={0.25}
+			speed={0.4}
+			shine={0.25}
+			bloom={0.1}
+			iridescence={0}
+			grain={0}
+		>
+			<div class="h-full w-full bg-neutral-950"></div>
+		</HexFloat>
+	{:else}
 		<div class="h-full w-full bg-neutral-950"></div>
-	</HexFloat>
+	{/if}
 </div>
 
 <!-- Full-viewport sparks and smoke rising behind the glass scene, tinted by
      the live accent. -->
-<div class="fixed inset-0 -z-10">
-	<Blaze class="h-full w-full" layers={3} distortion={0} sparkColor={accent} smokeColor={smoke} />
-</div>
+{#if effectsOn.blaze}
+	<div class="fixed inset-0 -z-10">
+		<Blaze class="h-full w-full" layers={3} distortion={0} sparkColor={accent} smokeColor={smoke} />
+	</div>
+{/if}
 
 <!-- Accent-colored fluid trails stirred by the cursor from anywhere on the
      page (see forwardToLiquid). -->
-<div bind:this={liquidLayer} class="pointer-events-none fixed inset-0 -z-10">
-	<Liquid class="h-full w-full" standalone color={accent} />
-</div>
+{#if effectsOn.liquid}
+	<div bind:this={liquidLayer} class="pointer-events-none fixed inset-0 -z-10">
+		<Liquid class="h-full w-full" standalone color={accent} />
+	</div>
+{/if}
 
 <!-- The centerpiece: the live music card riding the floating glass slab via
      the CSS3D projection — bobbing, rocking, drag-to-orbit — wrapped in
      flames that lick off its silhouette in the accent color. -->
-<GlassObject
-	class="h-screen w-full"
-	src={cardShape}
-	ior={1}
-	roughness={0}
-	dispersion={0}
-	clearcoat={0}
-	tint="#0a0a0a"
-	tintDensity={4}
-	environmentIntensity={0.35}
-	yOffset={-0.35}
-	depth={0.04}
-	bevel={0.25}
-	highlight={rgbCss(player.song.color)}
->
-	<FlameWrap class="h-480 w-360" color={accent} radius={64} height={340} spread={16}>
+{#snippet card()}
+	{#if effectsOn.flameWrap}
+		<FlameWrap class="h-480 w-360" color={accent} radius={64} height={340} spread={16}>
+			<MusicPlayer />
+		</FlameWrap>
+	{:else}
 		<MusicPlayer />
-	</FlameWrap>
-</GlassObject>
+	{/if}
+{/snippet}
+
+{#if effectsOn.glassObject}
+	<GlassObject
+		class="h-screen w-full"
+		src={cardShape}
+		ior={1}
+		roughness={0}
+		dispersion={0}
+		clearcoat={0}
+		tint="#0a0a0a"
+		tintDensity={4}
+		environmentIntensity={0.35}
+		yOffset={-0.35}
+		depth={0.04}
+		bevel={0.25}
+		highlight={rgbCss(player.song.color)}
+	>
+		{@render card()}
+	</GlassObject>
+{:else}
+	<!-- Slab off: the card flat and centered, scaled down to roughly the
+	     size the CSS3D projection presents it at. -->
+	<div class="grid h-screen w-full place-items-center">
+		<div class="origin-center scale-[0.38]">
+			{@render card()}
+		</div>
+	</div>
+{/if}
+
+<EffectsPanel />
 
 <!-- Plain footer links. pointer-events-auto so GlassObject's pointer routing
      lets them click while everything around them still drags to orbit. -->

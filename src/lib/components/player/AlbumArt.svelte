@@ -9,6 +9,8 @@
 
 	import { deepen, rgbCss, soften } from "$lib/utilities/color";
 
+	import { effectsOn } from "$lib/effects.svelte";
+
 	const art = $derived(player.song.artEffect);
 </script>
 
@@ -25,7 +27,7 @@
 				class="absolute inset-0 h-full w-full object-cover contrast-110 grayscale"
 			/>
 			<div class="pointer-events-none absolute inset-0 bg-(--accent) mix-blend-color"></div>
-			{#if art === "droplets"}
+			{#if art === "droplets" && effectsOn.droplets}
 				<div class="pointer-events-none absolute inset-0">
 					<Droplets
 						class="h-full w-full"
@@ -39,7 +41,7 @@
 						refraction={0.5}
 					/>
 				</div>
-			{:else if art === "retro-dither"}
+			{:else if art === "retro-dither" && effectsOn.retroDither}
 				<div class="pointer-events-none absolute inset-0">
 					<RetroDither
 						class="h-full w-full"
@@ -54,7 +56,7 @@
 						scanlines={0.15}
 					/>
 				</div>
-			{:else if art === "vhs"}
+			{:else if art === "vhs" && effectsOn.vhs}
 				<div class="pointer-events-none absolute inset-0">
 					<VHS
 						class="h-full w-full"

@@ -10,6 +10,8 @@
 	import { cn } from "$lib/utilities/cn";
 	import { deepen, rgbCss, soften } from "$lib/utilities/color";
 
+	import { effectsOn } from "$lib/effects.svelte";
+
 	// The live accent, exposed as CSS variables on the card root so every
 	// sub-component (and Tailwind's bg-(--accent) utilities) inherits it.
 	const accent = $derived(player.accent.current);
@@ -37,19 +39,21 @@
 >
 	<!-- Matrix glyphs raining behind the card's UI content on a negative-z
 	     layer, dimmed to an ambient texture, re-coloring per song. -->
-	<div class="pointer-events-none absolute inset-0 -z-10 opacity-60">
-		<GlyphRain
-			class="h-full w-full"
-			cell={64}
-			color={accent}
-			headColor={accent}
-			glow={0.8}
-			dim={0}
-			light={0}
-			relief={0}
-			stir={0}
-		/>
-	</div>
+	{#if effectsOn.glyphRain}
+		<div class="pointer-events-none absolute inset-0 -z-10 opacity-60">
+			<GlyphRain
+				class="h-full w-full"
+				cell={64}
+				color={accent}
+				headColor={accent}
+				glow={0.8}
+				dim={0}
+				light={0}
+				relief={0}
+				stir={0}
+			/>
+		</div>
+	{/if}
 
 	<div class="flex items-start justify-between">
 		<div>

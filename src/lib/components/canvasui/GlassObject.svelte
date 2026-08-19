@@ -8,6 +8,8 @@
 	import { toCreasedNormals } from "three/addons/utils/BufferGeometryUtils.js";
 
 	export interface GlassObjectOptions {
+		/** Backing-store resolution scale (0.1 to 1) for the WebGL renderer. Lower shades fewer pixels; the CSS3D projection layer stays crisp. */
+		resolutionScale?: number;
 		/** URL of the asset to display: GLB/glTF, SVG, PNG, JPEG, WebP, or GIF. Object URLs from a file input work too. The format is sniffed from the bytes, not the extension. */
 		src?: string;
 		/** Index of refraction of the glass (1 to 2.33). */
@@ -87,6 +89,7 @@
 	}
 
 	const DEFAULTS: Required<GlassObjectOptions> = {
+		resolutionScale: 1,
 		src: "",
 		ior: 1.75,
 		thickness: 4,
@@ -1125,7 +1128,9 @@
 		function resize() {
 			const width = Math.max(canvas.clientWidth, 1);
 			const height = Math.max(canvas.clientHeight, 1);
-			const pr = Math.min(window.devicePixelRatio || 1, 2);
+			const pr =
+				Math.min(window.devicePixelRatio || 1, 2) *
+				Math.min(Math.max(config.resolutionScale, 0.1), 1);
 			renderer.setPixelRatio(pr);
 			renderer.setSize(width, height, false);
 			cssRenderer?.setSize(width, height);
@@ -1217,7 +1222,9 @@
 
 				const previousHighlight = config.highlight;
 				const previousDistance = config.cameraDistance;
+				const previousScale = config.resolutionScale;
 				Object.assign(config, next);
+				if (config.resolutionScale !== previousScale) resize();
 				if (config.highlight !== previousHighlight) envDirty = true;
 				if (config.cameraDistance !== previousDistance) {
 					camera.position.copy(CAMERA_DIR).multiplyScalar(config.cameraDistance);

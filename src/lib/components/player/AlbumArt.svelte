@@ -9,7 +9,7 @@
 
 	import { deepen, rgbCss, soften } from "$lib/utilities/color";
 
-	import { effectsOn } from "$lib/effects.svelte";
+	import { CARD_RENDER_SCALE, effectsOn } from "$lib/effects.svelte";
 
 	const art = $derived(player.song.artEffect);
 </script>
@@ -31,6 +31,7 @@
 				<div class="pointer-events-none absolute inset-0">
 					<Droplets
 						class="h-full w-full"
+						resolutionScale={CARD_RENDER_SCALE}
 						interactive={false}
 						image={player.song.art}
 						imageTint={rgbCss(player.song.color)}
@@ -45,6 +46,7 @@
 				<div class="pointer-events-none absolute inset-0">
 					<RetroDither
 						class="h-full w-full"
+						resolutionScale={CARD_RENDER_SCALE}
 						image={player.song.art}
 						pixelSize={6}
 						levels={4}
@@ -60,6 +62,7 @@
 				<div class="pointer-events-none absolute inset-0">
 					<VHS
 						class="h-full w-full"
+						resolutionScale={CARD_RENDER_SCALE}
 						image={player.song.art}
 						imageTint={rgbCss(player.song.color)}
 						speed={0.7}

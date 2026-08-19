@@ -1,5 +1,7 @@
 <script module lang="ts">
 	export interface HexFloatOptions {
+		/** Backing-store resolution scale (0.1 to 1). Lower shades fewer pixels; CSS upscales the canvas. */
+		resolutionScale?: number;
 		/** Width of each hex tile in CSS pixels. */
 		size?: number;
 		/** Seam between tiles in CSS pixels. */
@@ -55,6 +57,7 @@
 	}
 
 	const DEFAULTS: Required<HexFloatOptions> = {
+		resolutionScale: 1,
 		size: 160,
 		gap: 0,
 		bevel: 1.5,
@@ -1031,7 +1034,9 @@ void main () {
 		}
 
 		function syncCanvasSize() {
-			const dpr = Math.min(window.devicePixelRatio || 1, 2);
+			const dpr =
+				Math.min(window.devicePixelRatio || 1, 2) *
+				Math.min(Math.max(config.resolutionScale, 0.1), 1);
 			const width = Math.max(1, Math.round(output.clientWidth * dpr));
 			const height = Math.max(1, Math.round(output.clientHeight * dpr));
 			if (output.width !== width || output.height !== height) {
@@ -1461,7 +1466,10 @@ void main () {
 					)
 				)
 					return;
+				const scaleChanged =
+					next.resolutionScale !== undefined && next.resolutionScale !== config.resolutionScale;
 				Object.assign(config, next);
+				if (scaleChanged) syncCanvasSize();
 				start();
 			},
 			resize() {

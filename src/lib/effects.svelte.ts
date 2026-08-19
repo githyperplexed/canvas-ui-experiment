@@ -51,6 +51,24 @@ export const EFFECT_GROUPS: EffectGroup[] = [
 	}
 ];
 
+// One global knob for how many pixels every effect canvas shades. 1 is native
+// (layout size × devicePixelRatio); the default trades near-invisible
+// resolution for a large GPU saving — fire, smoke, and glyphs are soft,
+// low-frequency imagery that upscales cleanly.
+export const RENDER_SCALE = 0.65;
+
+// The GlassObject projection displays the card at roughly 40% of its layout
+// size, so effects hosted inside the card can render at a matching fraction
+// and still meet the resolution that actually reaches the screen.
+//
+// Two tiers, because some card effects CARRY content in their texture:
+// FlameWrap holds the whole captured card and the art effects hold the album
+// image, so their canvases are what the viewer actually reads — they must not
+// drop below displayed resolution or the card goes blurry. Pure overlays
+// (GlyphRain, Laser) only draw their own soft imagery and can take the global
+// RENDER_SCALE on top.
+export const CARD_RENDER_SCALE = 0.5;
+
 /** Which effects render; the settings panel's checkboxes write here.
  * Liquid starts off — it's the heaviest optional layer. */
 export const effectsOn = $state<Record<EffectKey, boolean>>({

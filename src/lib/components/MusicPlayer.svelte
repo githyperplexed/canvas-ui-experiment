@@ -10,7 +10,7 @@
 	import { cn } from "$lib/utilities/cn";
 	import { deepen, rgbCss, soften } from "$lib/utilities/color";
 
-	import { effectsOn } from "$lib/effects.svelte";
+	import { CARD_RENDER_SCALE, effectsOn, RENDER_SCALE } from "$lib/effects.svelte";
 
 	// The live accent, exposed as CSS variables on the card root so every
 	// sub-component (and Tailwind's bg-(--accent) utilities) inherits it.
@@ -43,6 +43,7 @@
 		<div class="pointer-events-none absolute inset-0 -z-10 opacity-60">
 			<GlyphRain
 				class="h-full w-full"
+				resolutionScale={RENDER_SCALE * CARD_RENDER_SCALE}
 				cell={64}
 				color={accent}
 				headColor={accent}

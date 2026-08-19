@@ -1,5 +1,7 @@
 <script module lang="ts">
 	export interface DropletsOptions {
+		/** Backing-store resolution scale (0.1 to 1). Lower shades fewer pixels; CSS upscales the canvas. */
+		resolutionScale?: number;
 		/** How much rain falls, from a light drizzle to a downpour (0 to 1.25). */
 		intensity?: number;
 		/** Animation speed multiplier. */
@@ -61,6 +63,7 @@
 	}
 
 	const DEFAULTS: Required<DropletsOptions> = {
+		resolutionScale: 1,
 		intensity: 0.5,
 		speed: 1,
 		scale: 0.4,
@@ -439,7 +442,9 @@ void main () {
 		let contentMaxX = 1;
 
 		function syncCanvasSize() {
-			const dpr = Math.min(window.devicePixelRatio || 1, 2);
+			const dpr =
+				Math.min(window.devicePixelRatio || 1, 2) *
+				Math.min(Math.max(config.resolutionScale, 0.1), 1);
 			const width = Math.max(1, Math.round(output.clientWidth * dpr));
 			const height = Math.max(1, Math.round(output.clientHeight * dpr));
 			if (output.width !== width || output.height !== height) {
@@ -781,7 +786,10 @@ void main () {
 					)
 				)
 					return;
+				const scaleChanged =
+					next.resolutionScale !== undefined && next.resolutionScale !== config.resolutionScale;
 				Object.assign(config, next);
+				if (scaleChanged) syncCanvasSize();
 				loadBackdrop();
 				start();
 			},

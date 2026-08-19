@@ -1,5 +1,7 @@
 <script module lang="ts">
 	export interface LaserOptions {
+		/** Backing-store resolution scale (0.1 to 1). Lower shades fewer pixels; CSS upscales the canvas. */
+		resolutionScale?: number;
 		/** Animation speed of the beam wave, flicker, and sparkle. 1 is normal. */
 		speed?: number;
 		/** Distance of the beam from the bottom edge in CSS pixels. */
@@ -57,6 +59,7 @@
 	}
 
 	const DEFAULTS: Required<LaserOptions> = {
+		resolutionScale: 1,
 		speed: 0.3,
 		offset: 140,
 		color: [0.05, 0.35, 1],
@@ -409,7 +412,9 @@ void main () {
 		}
 
 		function syncCanvasSize() {
-			const dpr = Math.min(window.devicePixelRatio || 1, 2);
+			const dpr =
+				Math.min(window.devicePixelRatio || 1, 2) *
+				Math.min(Math.max(config.resolutionScale, 0.1), 1);
 			const width = Math.max(1, Math.round(output.clientWidth * dpr));
 			const height = Math.max(1, Math.round(output.clientHeight * dpr));
 			if (output.width !== width || output.height !== height) {
@@ -604,7 +609,10 @@ void main () {
 					!Object.entries(next).some(([key, value]) => config[key as keyof LaserOptions] !== value)
 				)
 					return;
+				const scaleChanged =
+					next.resolutionScale !== undefined && next.resolutionScale !== config.resolutionScale;
 				Object.assign(config, next);
+				if (scaleChanged) syncCanvasSize();
 				start();
 			},
 			resize() {

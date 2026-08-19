@@ -1,5 +1,7 @@
 <script module lang="ts">
 	export interface GlyphRainOptions {
+		/** Backing-store resolution scale (0.1 to 1). Lower shades fewer pixels; CSS upscales the canvas. */
+		resolutionScale?: number;
 		/** Characters used for the falling glyphs. Deduplicated into a glyph atlas. */
 		charset?: string;
 		/** Size of one glyph cell in CSS pixels (8 to 64). */
@@ -63,6 +65,7 @@
 	const DEFAULT_CHARSET = "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789Z*+-<>¦=:.";
 
 	const DEFAULTS: Required<GlyphRainOptions> = {
+		resolutionScale: 1,
 		charset: DEFAULT_CHARSET,
 		cell: 15,
 		color: [0.267, 0.455, 1],
@@ -475,7 +478,9 @@ void main () {
 		let dpr = 1;
 
 		function syncCanvasSize() {
-			dpr = Math.min(window.devicePixelRatio || 1, 2);
+			dpr =
+				Math.min(window.devicePixelRatio || 1, 2) *
+				Math.min(Math.max(config.resolutionScale, 0.1), 1);
 			const width = Math.max(1, Math.round(output.clientWidth * dpr));
 			const height = Math.max(1, Math.round(output.clientHeight * dpr));
 			if (output.width !== width || output.height !== height) {

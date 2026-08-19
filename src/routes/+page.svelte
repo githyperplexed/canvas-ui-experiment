@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount } from "svelte";
+
 	import Blaze from "$lib/components/canvasui/Blaze.svelte";
 	import FlameWrap from "$lib/components/canvasui/FlameWrap.svelte";
 	import GlassObject from "$lib/components/canvasui/GlassObject.svelte";
@@ -9,9 +11,10 @@
 
 	import { player } from "$lib/player.svelte";
 
+	import { cn } from "$lib/utilities/cn";
 	import { rgbCss } from "$lib/utilities/color";
 
-	import { effectsOn } from "$lib/effects.svelte";
+	import { CARD_RENDER_SCALE, effectsOn, RENDER_SCALE } from "$lib/effects.svelte";
 
 	// The glass slab's entire 3D model: one rounded rectangle, card-shaped.
 	const cardShape = `data:image/svg+xml;utf8,${encodeURIComponent(
@@ -20,6 +23,16 @@
 
 	const accent = $derived(player.accent.current);
 	const smoke = $derived(accent.map((v) => v * 0.6) as [number, number, number]);
+
+	// The boot veil ships opaque in the server-rendered HTML, so the first
+	// paint is solid black instead of the giant unprojected card. Once the
+	// effect canvases have had a beat to mount and paint, it fades away.
+	let revealed = $state(false);
+
+	onMount(() => {
+		const id = setTimeout(() => (revealed = true), 400);
+		return () => clearTimeout(id);
+	});
 
 	let liquidLayer: HTMLDivElement | undefined = $state();
 
@@ -53,6 +66,7 @@
 	{#if effectsOn.hexFloat}
 		<HexFloat
 			class="h-full w-full"
+			resolutionScale={RENDER_SCALE}
 			size={320}
 			float={0.25}
 			speed={0.4}
@@ -72,7 +86,14 @@
      the live accent. -->
 {#if effectsOn.blaze}
 	<div class="fixed inset-0 -z-10">
-		<Blaze class="h-full w-full" layers={3} distortion={0} sparkColor={accent} smokeColor={smoke} />
+		<Blaze
+			class="h-full w-full"
+			resolutionScale={RENDER_SCALE}
+			layers={3}
+			distortion={0}
+			sparkColor={accent}
+			smokeColor={smoke}
+		/>
 	</div>
 {/if}
 
@@ -80,7 +101,7 @@
      page (see forwardToLiquid). -->
 {#if effectsOn.liquid}
 	<div bind:this={liquidLayer} class="pointer-events-none fixed inset-0 -z-10">
-		<Liquid class="h-full w-full" standalone color={accent} />
+		<Liquid class="h-full w-full" resolutionScale={RENDER_SCALE} standalone color={accent} />
 	</div>
 {/if}
 
@@ -89,7 +110,14 @@
      flames that lick off its silhouette in the accent color. -->
 {#snippet card()}
 	{#if effectsOn.flameWrap}
-		<FlameWrap class="h-480 w-360" color={accent} radius={64} height={340} spread={16}>
+		<FlameWrap
+			class="h-480 w-360"
+			resolutionScale={CARD_RENDER_SCALE}
+			color={accent}
+			radius={64}
+			height={340}
+			spread={16}
+		>
 			<MusicPlayer />
 		</FlameWrap>
 	{:else}
@@ -100,6 +128,7 @@
 {#if effectsOn.glassObject}
 	<GlassObject
 		class="h-screen w-full"
+		resolutionScale={RENDER_SCALE}
 		src={cardShape}
 		ior={1}
 		roughness={0}
@@ -124,6 +153,16 @@
 		</div>
 	</div>
 {/if}
+
+<!-- Boot veil (see `revealed`). Sits above everything, including the settings
+     panel, and never intercepts the pointer. -->
+<div
+	class={cn(
+		"pointer-events-none fixed inset-0 z-50 bg-neutral-950 transition-opacity duration-700",
+		revealed && "opacity-0"
+	)}
+	aria-hidden="true"
+></div>
 
 <EffectsPanel />
 

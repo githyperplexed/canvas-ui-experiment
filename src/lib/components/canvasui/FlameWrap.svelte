@@ -1,5 +1,7 @@
 <script module lang="ts">
 	export interface FlameWrapOptions {
+		/** Backing-store resolution scale (0.1 to 1). Lower shades fewer pixels; CSS upscales the canvas. */
+		resolutionScale?: number;
 		/** Flame color as [r, g, b] in 0-1 range. */
 		color?: [number, number, number];
 		/** Overall brightness of the fire (0 to 3). */
@@ -61,6 +63,7 @@
 	}
 
 	const DEFAULTS: Required<FlameWrapOptions> = {
+		resolutionScale: 1,
 		color: [0.31, 0.54, 1],
 		intensity: 0.5,
 		height: 170,
@@ -501,7 +504,9 @@ void main () {
 		let dpr = 1;
 
 		function syncCanvasSize() {
-			dpr = Math.min(window.devicePixelRatio || 1, 2);
+			dpr =
+				Math.min(window.devicePixelRatio || 1, 2) *
+				Math.min(Math.max(config.resolutionScale, 0.1), 1);
 			const width = Math.max(1, Math.round(output.clientWidth * dpr));
 			const height = Math.max(1, Math.round(output.clientHeight * dpr));
 			if (output.width !== width || output.height !== height) {

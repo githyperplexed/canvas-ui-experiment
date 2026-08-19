@@ -1,5 +1,7 @@
 <script module lang="ts">
 	export interface LiquidOptions {
+		/** Backing-store resolution scale (0.1 to 1). Lower shades fewer pixels; CSS upscales the canvas. */
+		resolutionScale?: number;
 		/** Resolution of the simulation grid. */
 		simResolution?: number;
 		/** Resolution of the fluid trail texture. */
@@ -53,6 +55,7 @@
 	}
 
 	const DEFAULTS: Required<LiquidOptions> = {
+		resolutionScale: 1,
 		simResolution: 128,
 		dyeResolution: 512,
 		densityDissipation: 0.96,
@@ -499,7 +502,9 @@ void main () {
 		}
 
 		function syncCanvasSize() {
-			const dpr = Math.min(window.devicePixelRatio || 1, 2);
+			const dpr =
+				Math.min(window.devicePixelRatio || 1, 2) *
+				Math.min(Math.max(config.resolutionScale, 0.1), 1);
 			const width = Math.max(1, Math.round(output.clientWidth * dpr));
 			const height = Math.max(1, Math.round(output.clientHeight * dpr));
 			if (output.width !== width || output.height !== height) {
@@ -777,7 +782,10 @@ void main () {
 				const { simResolution, dyeResolution, ...rest } = next;
 				void simResolution;
 				void dyeResolution;
+				const scaleChanged =
+					rest.resolutionScale !== undefined && rest.resolutionScale !== config.resolutionScale;
 				Object.assign(config, rest);
+				if (scaleChanged) syncCanvasSize();
 				start();
 			},
 			resize() {

@@ -5,7 +5,7 @@
 
 	import { player } from "$lib/player.svelte";
 
-	import { effectsOn } from "$lib/effects.svelte";
+	import { CARD_RENDER_SCALE, effectsOn, RENDER_SCALE } from "$lib/effects.svelte";
 
 	const accent = $derived(player.accent.current);
 </script>
@@ -22,6 +22,7 @@
 		>
 			<Laser
 				class="h-full w-full"
+				resolutionScale={RENDER_SCALE * CARD_RENDER_SCALE}
 				color={accent}
 				offset={326}
 				cutoff={false}

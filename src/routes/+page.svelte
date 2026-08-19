@@ -31,8 +31,10 @@
 	//   ?thumbnail / ?thumbnail=form  landscape payment card (default)
 	//   ?thumbnail=input              three raw XXL inputs, no container
 	//   ?thumbnail=search             one pill XXL search input, split
-	//   ?thumbnail=captcha            the "I'm not a robot" card, split
-	//   ?thumbnail=cookies            the cookie consent banner, split
+	//   ?thumbnail=captcha            the "I'm not a robot" card fully aflame, no split
+	//   ?thumbnail=cursor             one giant arrow cursor, split
+	//   ?thumbnail=toggle             one giant toggle switch fully aflame, knob too, no split
+	//   ?thumbnail=cookies            the cookie consent banner fully aflame, no split
 	//   ?thumbnail=full-form          the whole flaming card, no split
 	//   ?thumbnail=receipt            the day-one receipt on HexFloat, no split
 	//   ?thumbnail=pass               a boarding pass under Magnify, no split
@@ -41,11 +43,20 @@
 	const thumbnailInput = $derived(thumbnailVariant === "input");
 	const thumbnailSearch = $derived(thumbnailVariant === "search");
 	const thumbnailCaptcha = $derived(thumbnailVariant === "captcha");
+	const thumbnailCursor = $derived(thumbnailVariant === "cursor");
+	const thumbnailToggle = $derived(thumbnailVariant === "toggle");
 	const thumbnailCookies = $derived(thumbnailVariant === "cookies");
 	const thumbnailFullForm = $derived(thumbnailVariant === "full-form");
 	const thumbnailReceipt = $derived(thumbnailVariant === "receipt");
 	const thumbnailPass = $derived(thumbnailVariant === "pass");
-	const thumbnailSplit = $derived(!thumbnailFullForm && !thumbnailReceipt && !thumbnailPass);
+	const thumbnailSplit = $derived(
+		!thumbnailFullForm &&
+			!thumbnailReceipt &&
+			!thumbnailPass &&
+			!thumbnailToggle &&
+			!thumbnailCookies &&
+			!thumbnailCaptcha
+	);
 
 	// Sequence mode (?sequence): the recording stage for the UI-build timelapse.
 	// BuildCard reveals item by item; a side panel steps, plays, and paces the
@@ -186,76 +197,180 @@
 				</div>
 			</div>
 		{:else if thumbnailCaptcha}
-			<!-- The robot-check card mid-incineration: checkbox half plain, the
-			     verification mark half burning. -->
-			<div class="absolute inset-y-0 left-0 w-1/2 overflow-clip">
-				<div class="absolute top-1/2 right-0 h-[400px] w-[1600px] translate-x-1/2 -translate-y-1/2">
+			<!-- The robot-check card, whole thing ablaze — no split. Cool
+			     blue-gray stage with the amber Blaze across all of it, card
+			     sunk below center like the full-form for flame headroom. -->
+			<div class="absolute inset-0 bg-[#131a26]">
+				<Blaze
+					class="h-full w-full"
+					layers={3}
+					distortion={0}
+					sparkColor={[1, 0.62, 0.1]}
+					smokeColor={[0.6, 0.37, 0.06]}
+				/>
+			</div>
+			<div
+				class="absolute top-[calc(50%+8vh)] left-1/2 h-[400px] w-[1600px] -translate-x-1/2 -translate-y-1/2"
+			>
+				<FlameWrap
+					class="h-full w-full"
+					color={[1, 0.62, 0.1]}
+					radius={16}
+					height={420}
+					spread={28}
+					scale={0.65}
+					intensity={1}
+					sparks={2.5}
+					sparkDensity={2}
+				>
 					<CaptchaCard />
+				</FlameWrap>
+			</div>
+		{:else if thumbnailCursor}
+			<!-- One giant arrow cursor mid-incineration — same treatment as the
+			     captcha: plain left half, burning right half, blue-gray stage,
+			     no divider. The classic 7-point pointer polygon as inline SVG,
+			     white fill with a dark outline so it reads on the dark stage.
+			     Wrapper ratio (560×760) matches the 14×19 viewBox so the SVG
+			     fills it exactly and both halves stay in register. -->
+			{#snippet cursorGraphic()}
+				<svg class="h-full w-full" viewBox="0 0 14 19" aria-hidden="true">
+					<path
+						d="M1 1 L1 15.5 L4.9 12.4 L7.6 18 L10.4 16.7 L7.7 11.2 L12.6 11.2 Z"
+						fill="#ffffff"
+						stroke="#0a0d14"
+						stroke-width="0.6"
+						stroke-linejoin="round"
+					/>
+				</svg>
+			{/snippet}
+			<div class="absolute inset-y-0 left-0 w-1/2 overflow-clip bg-[#131a26]">
+				<div class="absolute top-1/2 right-0 h-[760px] w-[560px] translate-x-1/2 -translate-y-1/2">
+					{@render cursorGraphic()}
 				</div>
 			</div>
-			<div class="absolute inset-y-0 right-0 w-1/2 overflow-clip">
-				<!-- Blaze behind the burning half only, orange to match. -->
+			<div class="absolute inset-y-0 right-0 w-1/2 overflow-clip bg-[#131a26]">
+				<!-- Blaze behind the burning half only, amber to match. -->
 				<div class="absolute inset-0">
 					<Blaze
 						class="h-full w-full"
 						layers={3}
 						distortion={0}
-						sparkColor={[0.976, 0.451, 0.086]}
-						smokeColor={[0.586, 0.271, 0.052]}
+						sparkColor={[1, 0.62, 0.1]}
+						smokeColor={[0.6, 0.37, 0.06]}
 					/>
 				</div>
-				<div class="absolute top-1/2 left-0 h-[400px] w-[1600px] -translate-x-1/2 -translate-y-1/2">
+				<div class="absolute top-1/2 left-0 h-[760px] w-[560px] -translate-x-1/2 -translate-y-1/2">
 					<FlameWrap
 						class="h-full w-full"
-						color={[0.976, 0.451, 0.086]}
-						radius={16}
-						height={420}
+						color={[1, 0.62, 0.1]}
+						radius={64}
+						height={460}
 						spread={28}
-						scale={0.65}
+						scale={0.6}
 						intensity={1}
 						sparks={2.5}
 						sparkDensity={2}
 					>
-						<CaptchaCard />
+						{@render cursorGraphic()}
 					</FlameWrap>
+				</div>
+			</div>
+		{:else if thumbnailToggle}
+			<!-- One giant toggle switch, whole thing ablaze — no split. The knob
+			     burns separately via the checkout form's "overlay" trick: a
+			     childless FlameWrap floated above it, fire self-generated from
+			     the rect (full radius makes it a circle), so nothing depends on
+			     capture-inside-capture. Solid off-white track like the captcha
+			     card; bright blue knob. All fire — pill, knob, and Blaze — in
+			     the main experiment's blue. Sunk below center like the
+			     full-form for flame headroom. -->
+			<div class="absolute inset-0 bg-[#131a26]">
+				<Blaze
+					class="h-full w-full"
+					layers={3}
+					distortion={0}
+					sparkColor={[0.231, 0.51, 0.965]}
+					smokeColor={[0.139, 0.306, 0.579]}
+				/>
+			</div>
+			<div
+				class="absolute top-[calc(50%+8vh)] left-1/2 h-[480px] w-[1120px] -translate-x-1/2 -translate-y-1/2"
+			>
+				<FlameWrap
+					class="h-full w-full"
+					color={[0.231, 0.51, 0.965]}
+					radius={240}
+					height={460}
+					spread={28}
+					scale={0.6}
+					intensity={1}
+					sparks={2.5}
+					sparkDensity={2}
+				>
+					<div
+						class="relative h-full w-full rounded-full border-4 border-[#d3d3d3] bg-[#f9f9f9] shadow-[0_24px_80px_rgba(0,0,0,0.5)]"
+					>
+						<div
+							class="absolute top-1/2 right-[40px] size-[400px] -translate-y-1/2 rounded-full bg-[#60a5fa] shadow-[0_16px_48px_rgba(0,0,0,0.35)]"
+						></div>
+					</div>
+				</FlameWrap>
+				<!-- Knob fire as a sibling above the outer FlameWrap, not inside
+				     it: inside, its oversized canvas overflows the capture
+				     wrapper (overflow: auto → scrollbars) and the flames get
+				     clipped at the pill's top edge. Out here it composites over
+				     the burning pill instead. right-[44px] = the knob's 40px
+				     inset plus the track's 4px border. -->
+				<div
+					class="pointer-events-none absolute top-1/2 right-[44px] size-[400px] -translate-y-1/2"
+				>
+					<FlameWrap
+						class="h-full w-full"
+						color={[0.231, 0.51, 0.965]}
+						radius={200}
+						height={200}
+						spread={14}
+						scale={0.75}
+						intensity={0.85}
+						speed={0.3}
+						sparks={2}
+						sparkDensity={1.5}
+						distortion={5}
+						smoke={0.8}
+						ember={1.5}
+					/>
 				</div>
 			</div>
 		{:else if thumbnailCookies}
-			<!-- The cookie consent banner: copy on the plain left half, the
-			     "Accept all" button row burning on the right. Light card on
-			     the dark stage, like the captcha. -->
-			<div class="absolute inset-y-0 left-0 w-1/2 overflow-clip">
-				<div class="absolute top-1/2 right-0 h-[480px] w-[1600px] translate-x-1/2 -translate-y-1/2">
-					<CookieBanner />
-				</div>
+			<!-- The cookie consent banner, whole thing ablaze — no split.
+			     Orange Blaze across the whole stage, banner sunk below center
+			     like the full-form for flame headroom. -->
+			<div class="absolute inset-0">
+				<Blaze
+					class="h-full w-full"
+					layers={3}
+					distortion={0}
+					sparkColor={[0.976, 0.451, 0.086]}
+					smokeColor={[0.586, 0.271, 0.052]}
+				/>
 			</div>
-			<div class="absolute inset-y-0 right-0 w-1/2 overflow-clip">
-				<!-- Blaze behind the burning half only — sparks and smoke rising
-				     in the same orange as the flames. -->
-				<div class="absolute inset-0">
-					<Blaze
-						class="h-full w-full"
-						layers={3}
-						distortion={0}
-						sparkColor={[0.976, 0.451, 0.086]}
-						smokeColor={[0.586, 0.271, 0.052]}
-					/>
-				</div>
-				<div class="absolute top-1/2 left-0 h-[480px] w-[1600px] -translate-x-1/2 -translate-y-1/2">
-					<FlameWrap
-						class="h-full w-full"
-						color={[0.976, 0.451, 0.086]}
-						radius={48}
-						height={360}
-						spread={24}
-						scale={0.65}
-						intensity={0.9}
-						sparks={2}
-						sparkDensity={1.5}
-					>
-						<CookieBanner />
-					</FlameWrap>
-				</div>
+			<div
+				class="absolute top-[calc(50%+8vh)] left-1/2 h-[480px] w-[1600px] -translate-x-1/2 -translate-y-1/2"
+			>
+				<FlameWrap
+					class="h-full w-full"
+					color={[0.976, 0.451, 0.086]}
+					radius={48}
+					height={420}
+					spread={24}
+					scale={0.65}
+					intensity={1}
+					sparks={2.5}
+					sparkDensity={2}
+				>
+					<CookieBanner />
+				</FlameWrap>
 			</div>
 		{:else if thumbnailSearch}
 			<!-- One pill XXL search input split across the divider — same
@@ -330,7 +445,7 @@
 				</div>
 			</div>
 		{/if}
-		{#if thumbnailSplit}
+		{#if thumbnailSplit && !thumbnailCursor}
 			<div class="absolute inset-y-0 left-1/2 w-4 -translate-x-1/2 bg-white"></div>
 		{/if}
 	</div>
